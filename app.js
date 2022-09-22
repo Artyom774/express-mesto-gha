@@ -1,4 +1,33 @@
-const express = require('express');
+const http = require('http');
+
+const { router } = require('./routes');
+
+const { PORT = 3000 } = process.env;
+
+const { mainPageMarkup, submitSuccessMarkup } = require('./views');
+const { getMainPage, postForm } = require('./routes/routes');
+
+const server = http.createServer((req, res) => {
+  if (req.url === '/submit' && req.method === 'POST') {
+    postForm(req, res);
+  };
+
+  if (req.url === '/' && req.method === 'GET') {
+    getMainPage(req, res);
+  }
+});
+
+server.listen(PORT);
+
+
+
+
+
+
+
+
+
+/*const express = require('express');
 const path = require('path');
 //const cors = require('cors');
 const mongoose = require('mongoose');
@@ -30,4 +59,4 @@ app.use('/users', require('./routes/users'));
 app.listen(PORT, () => {
   console.log('Ссылка на сервер');
   console.log(BASE_PATH);
-});
+});*/

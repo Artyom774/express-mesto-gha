@@ -1,4 +1,15 @@
-const mongoose = require('mongoose');
+module.exports.cards = [
+  {name: 'Урал',
+  link: 'ссылка на Урал'},
+  {name: 'Сибирь',
+  link: 'ссылка в Сибирь'},
+];
+
+
+
+
+
+/*const mongoose = require('mongoose');
 
 const card = new mongoose.Schema({
   name: {
@@ -24,4 +35,4 @@ const card = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('card', card);
+module.exports = mongoose.model('card', card);*/
