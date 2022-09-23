@@ -1,12 +1,9 @@
-const { BASE_PATH } = process.env;
-
 const mainPageMarkup = `
   <!DOCTYPE html>
   <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="style.css">
     <title>Список дел</title>
     <style>
       html, body {
@@ -61,7 +58,7 @@ const mainPageMarkup = `
     </style>
   </head>
   <body>
-    <form class="container" method="POST" enctype="text/plain" action="${BASE_PATH}/submit">
+    <form class="container" method="POST" enctype="text/plain" action="./submit">
       <h1>Список дел</h1>
       <div class="input">
         <input type="text" placeholder="Дело" class="input__text" name="item">
@@ -80,7 +77,6 @@ const submitSuccessMarkup = `
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="stylesheet" href="style.css">
         <title>Список дел</title>
         <style>
             html, body {
@@ -106,7 +102,7 @@ const submitSuccessMarkup = `
     <body>
         <div class="container">
             <h1>Форма успешно отправлена</h1>
-            <a href="${BASE_PATH}">Вернуться назад</a>
+            <a href="../">Вернуться назад</a>
         </div>
     </body>
     </html>

@@ -1,9 +1,10 @@
 const User = require('../models/user');
 
 module.exports.getUser = (req, res) => {
-  User.find({})
+  /*User.find({})
     .then(users => res.send({ data: users }))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .catch(err => res.status(500).send({ message: err.message }));*/
+
 };
 
 module.exports.createUser = (req, res) => {

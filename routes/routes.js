@@ -1,4 +1,4 @@
-const { mainPageMarkup, submitSuccessMarkup } = require('../views')
+const { mainPageMarkup, submitSuccessMarkup } = require('../views');
 
 const todos = [];
 

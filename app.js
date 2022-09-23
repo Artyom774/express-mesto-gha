@@ -4,18 +4,7 @@ const { router } = require('./routes');
 
 const { PORT = 3000 } = process.env;
 
-const { mainPageMarkup, submitSuccessMarkup } = require('./views');
-const { getMainPage, postForm } = require('./routes/routes');
-
-const server = http.createServer((req, res) => {
-  if (req.url === '/submit' && req.method === 'POST') {
-    postForm(req, res);
-  };
-
-  if (req.url === '/' && req.method === 'GET') {
-    getMainPage(req, res);
-  }
-});
+const server = http.createServer(router);
 
 server.listen(PORT);
 
