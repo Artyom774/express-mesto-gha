@@ -1,8 +1,22 @@
 const router = require('express').Router();
-const { getUsers, createUser } = require('../controllers/users');
+const { users } = require('../db.js');
 
-router.get('/users', getUsers);
-//router.get('/users/:userId', getUsers); // еще не прописан
-router.post('/users', createUser);
+router.get('/', (req, res) => {
+  if (users.length === 0) {
+    res.send(`База пользователей пуста`);
+    return;
+  }
+  res.send(`Список пользователей:
+  ${users}`);
+});
+
+router.get('/:id', (req, res) => {
+  if (!users[req.params.id]) {
+    res.send(`Такого пользователя не существует`);
+    return;
+  }
+  const { name, age } = users[req.params.id];
+  res.send(`Пользователь ${name}, ${age} лет`);
+});
 
 module.exports = router;
