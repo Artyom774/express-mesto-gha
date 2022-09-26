@@ -1,7 +1,8 @@
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
-const router = require('./routes/users.js');
+const usersRouter = require('./routes/users.js');
+const cardsRouter = require('./routes/cards');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
@@ -23,10 +24,11 @@ const timeLog = (req, res, next) => {
 app.use(timeLog);
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/users', router);
+app.use('/users', usersRouter);
+app.use('/cards', cardsRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));  // Если обратиться к корню сервера, мы автоматически попадём в папку public и получим файл index.html
 
 app.listen(PORT, () => {
-  console.log(`Ссылка на сервер: ${PORT}`);
+  console.log(`Порт сервера: ${PORT}`);
 });
