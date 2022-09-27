@@ -1,4 +1,3 @@
-const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const usersRouter = require('./routes/users.js');
@@ -11,9 +10,9 @@ const app = express();
 app.use(cors());
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
-  /*useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false*/
+  //useNewUrlParser: true,
+  //useCreateIndex: true,
+  //useFindAndModify: false
 });
 
 const timeLog = (req, res, next) => {
@@ -26,8 +25,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
-
-app.use(express.static(path.join(__dirname, 'public')));  // Если обратиться к корню сервера, мы автоматически попадём в папку public и получим файл index.html
 
 app.listen(PORT, () => {
   console.log(`Порт сервера: ${PORT}`);
