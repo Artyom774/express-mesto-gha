@@ -21,3 +21,21 @@ module.exports.createUser = (req, res) => {
     .then(user => res.send( user ))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
+
+module.exports.updateUser = (req, res) => {
+  const meId = req.user._id;
+  const { name, about } = req.body;
+
+  User.findByIdAndUpdate(meId, { name: name, about: about })
+    .then(user => res.send(user))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+
+module.exports.updateAvatar = (req, res) => {
+  const meId = req.user._id;
+  const { avatar } = req.body;
+
+  User.findByIdAndUpdate(meId, { avatar: avatar })
+    .then(user => res.send(user))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};

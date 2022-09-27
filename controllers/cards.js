@@ -27,6 +27,22 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
-      .then(card => res.send(card))
-      .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then(card => res.send(card))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+
+module.exports.likeCard = (req, res) => {
+  const userId = req.user._id;
+
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: userId } }, { new: true },)  // добавить _id в массив, если его там нет
+    .then(card => res.send(card))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+
+module.exports.dislikeCard = (req, res) => {
+  const userId = req.user._id;
+
+  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: userId } }, { new: true },)  // убрать _id из массива
+  .then(card => res.send(card))
+  .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
