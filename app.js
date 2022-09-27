@@ -10,9 +10,7 @@ const app = express();
 app.use(cors());
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
-  //useNewUrlParser: true,
-  //useCreateIndex: true,
-  //useFindAndModify: false
+  useNewUrlParser: true
 });
 
 const timeLog = (req, res, next) => {
@@ -21,7 +19,15 @@ const timeLog = (req, res, next) => {
 };
 
 app.use(timeLog);
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  req.user = {
+    _id: '63333151c6b19938765436e0'
+  };
+
+  next();
+});
 
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);

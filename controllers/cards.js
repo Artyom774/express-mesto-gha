@@ -2,22 +2,31 @@ const Card = require('../models/card');
 
 module.exports.findAllCards = (req, res) => {
   Card.find({})
+    .populate('owner')
     .then(cards => res.send(cards))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.findCardById = (req, res) => {
   Card.findById(req.params.id)
+    .populate('owner')
     .then((card) => {
-      const { name, link } = card;
-      res.send(`Карточка ${name}, ссылка: ${link}`)})
+      const { name, link, owner } = card;
+      res.send(`Карточка ${name}, ссылка: ${link}. Имя владельца: ${owner.name}`)})
     .catch(() => res.status(500).send({ message: 'Запрашиваемая карточка не найдена' }));
 };
 
 module.exports.createCard = (req, res) => {
-  const { name, link, owner } = req.body;
+  const ownerId = req.user._id;
+  const { name, link } = req.body;
 
-  Card.create({ name, link, owner })
+  Card.create({ name, link, owner: ownerId })
     .then(user => res.send( user ))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+
+module.exports.deleteCard = (req, res) => {
+  Card.findByIdAndRemove(req.params.id)
+      .then(card => res.send(card))
+      .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
