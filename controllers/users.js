@@ -11,7 +11,8 @@ module.exports.findUserById = (req, res) => {
     .then((user) => {
       const { name, about } = user;
       res.send(`Пользователь ${name}, ${about}`)})
-    .catch(() => res.status(500).send({ message: 'Запрашиваемый пользователь не найден' }));
+    .catch(() => {
+      res.status(500).send({ message: 'Запрашиваемый пользователь не найден' })});
 };
 
 module.exports.createUser = (req, res) => {
