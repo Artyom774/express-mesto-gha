@@ -11,9 +11,10 @@ module.exports.findCardById = (req, res) => {
   Card.findById(req.params.id)
     .populate('owner')
     .then((card) => {
-      const { name, link, owner } = card;
-      res.send(`Карточка ${name}, ссылка: ${link}. Имя владельца: ${owner.name}`)})
-    .catch(() => res.status(500).send({ message: 'Запрашиваемая карточка не найдена' }));
+      if (card) {res.send(card)}
+      else {res.status(404).send({ message: "Запрашиваемая карточка не найден"})}
+    })
+    .catch(() => res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -21,8 +22,10 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: ownerId })
-    .then(user => res.send( user ))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then(card => res.send(card))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {res.status(400).send({ message: 'Данные о новой карточке не удовлетворяют требованиям валидации' })}
+      else {res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' })}});
 };
 
 module.exports.deleteCard = (req, res) => {
