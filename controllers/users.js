@@ -12,8 +12,9 @@ module.exports.findUserById = (req, res) => {
       if (user) {res.send(user)}
       else {res.status(404).send({ message: "Запрашиваемый пользователь не найден"})}
     })
-    .catch(() => {
-      res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' })});
+    .catch((err) => {
+      if (err.name === 'CastError') {res.status(400).send({ message: 'Передан некорректный id' })}
+      else {res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' })}});
 };
 
 module.exports.createUser = (req, res) => {
@@ -29,18 +30,21 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const meId = req.user._id;
   const { name, about } = req.body;
-  if (name.length < 2 || name.length > 30 || about.length < 2 || about.length > 30) {
+  /*if (name.length < 2 || name.length > 30 || about.length < 2 || about.length > 30) {
     res.status(400).send({ message: 'Новые данные не удовлетворяют требованиям валидации' });
     return
-  }
+  }*/
 
-  User.findByIdAndUpdate(meId, { name: name, about: about })
+  User.findByIdAndUpdate(meId, { name: name, about: about }, {new: true,
+    runValidators: true // данные будут валидированы перед изменением
+})
     .then((user) => {
       if (user) {res.send(user)}
       else {res.status(404).send({ message: "Запрашиваемый пользователь не найден"})}
     })
-    .catch(() => {
-      res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' })});
+    .catch((err) => {
+      if (err.name === 'ValidationError') {res.status(400).send({ message: 'Новые данные не удовлетворяют требованиям валидации' })}
+      else {res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' })}});
 };
 
 module.exports.updateAvatar = (req, res) => {
