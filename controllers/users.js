@@ -3,7 +3,7 @@ const User = require('../models/user');
 module.exports.findAllUsers = (req, res) => {
   User.find({})
     .then(users => res.send(users))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }));
 };
 
 module.exports.findUserById = (req, res) => {
@@ -30,14 +30,8 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const meId = req.user._id;
   const { name, about } = req.body;
-  /*if (name.length < 2 || name.length > 30 || about.length < 2 || about.length > 30) {
-    res.status(400).send({ message: 'Новые данные не удовлетворяют требованиям валидации' });
-    return
-  }*/
 
-  User.findByIdAndUpdate(meId, { name: name, about: about }, {new: true,
-    runValidators: true // данные будут валидированы перед изменением
-})
+  User.findByIdAndUpdate(meId, { name: name, about: about }, {new: true, runValidators: true})
     .then((user) => {
       if (user) {res.send(user)}
       else {res.status(404).send({ message: "Запрашиваемый пользователь не найден"})}
@@ -55,7 +49,7 @@ module.exports.updateAvatar = (req, res) => {
     return
   }
 
-  User.findByIdAndUpdate(meId, { avatar: avatar })
+  User.findByIdAndUpdate(meId, { avatar: avatar }, {new: true, runValidators: true})
     .then((user) => {
       if (user) {res.send(user)}
         else {res.status(404).send({ message: "Запрашиваемый пользователь не найден"})}
