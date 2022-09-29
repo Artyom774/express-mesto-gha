@@ -14,7 +14,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 const timeLog = (req, res, next) => {
-  console.log(req.method);
+  console.log('Используемый метод запроса: ', req.method);
   next();
 };
 
