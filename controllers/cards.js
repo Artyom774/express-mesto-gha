@@ -2,19 +2,18 @@ const Card = require('../models/card');
 
 module.exports.findAllCards = (req, res) => {
   Card.find({})
-    .populate('owner')
-    .then(cards => res.send(cards))
+    .then((cards) => res.send(cards))
     .catch(() => res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }));
 };
 
 module.exports.findCardById = (req, res) => {
   Card.findById(req.params.id)
-    .populate('owner')
     .then((card) => {
-      if (card) {res.send(card)}
-      else {res.status(404).send({ message: "Запрашиваемая карточка не найден"})}
+      if (card) { res.send(card); } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
     })
-    .catch(() => res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }));
+    .catch((err) => {
+      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+    });
 };
 
 module.exports.createCard = (req, res) => {
@@ -22,45 +21,42 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: ownerId })
-    .then(card => res.send(card))
+    .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'ValidationError') {res.status(400).send({ message: 'Данные о новой карточке не удовлетворяют требованиям валидации' })}
-      else {res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' })}});
+      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Данные о новой карточке не удовлетворяют требованиям валидации' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
     .then((card) => {
-      if (card) {res.send(card)}
-      else {res.status(404).send({ message: "Запрашиваемая карточка не найден"})}
+      if (card) { res.send(card); } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {res.status(400).send({ message: 'Передан некорректный id' })}
-      else {res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' })}});
+      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+    });
 };
 
 module.exports.likeCard = (req, res) => {
   const userId = req.user._id;
 
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: userId } }, { new: true },)
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: userId } }, { new: true })
     .then((card) => {
-      if (card) {res.send(card)}
-      else {res.status(404).send({ message: "Запрашиваемая карточка не найден"})}
+      if (card) { res.send(card); } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {res.status(400).send({ message: 'Передан некорректный id' })}
-      else {res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' })}});
+      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
   const userId = req.user._id;
 
-  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: userId } }, { new: true },)
-  .then((card) => {
-    if (card) {res.send(card)}
-    else {res.status(404).send({ message: "Запрашиваемая карточка не найден"})}
-  })
-  .catch((err) => {
-    if (err.name === 'CastError') {res.status(400).send({ message: 'Передан некорректный id' })}
-    else {res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' })}});
+  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: userId } }, { new: true })
+    .then((card) => {
+      if (card) { res.send(card); } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+    });
 };
