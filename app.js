@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000 } = process.env; // файла .env нет в проекте
 const app = express();
 app.use(cors());
 
