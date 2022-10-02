@@ -7,6 +7,17 @@ const userSchema = new mongoose.Schema({
     minlength: 2, // минимальная длина имени — 2 символа
     maxlength: 30, // а максимальная — 30 символов
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
+    maxlength: 30,
+  },
   about: {
     type: String,
     required: true,

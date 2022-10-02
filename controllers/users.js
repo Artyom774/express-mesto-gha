@@ -1,4 +1,6 @@
+const validator = require('validator');
 const User = require('../models/user');
+// validate: validator.$isEmail(),
 
 module.exports.findAllUsers = (req, res) => {
   User.find({})
@@ -17,9 +19,17 @@ module.exports.findUserById = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name, email, password, about, avatar,
+  } = req.body;
+  if (!validator.isEmail(email)) {
+    res.status(400).send({ message: 'Email не удовлетворяют требованиям валидации' });
+    return;
+  }
 
-  User.create({ name, about, avatar })
+  User.create({
+    name, email, password, about, avatar,
+  })
     .then((user) => { res.send(user); })
     .catch((err) => {
       if (err.name === 'ValidationError') { res.status(400).send({ message: 'Данные о новом пользователе не удовлетворяют требованиям валидации' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
