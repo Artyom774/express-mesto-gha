@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const User = require('../models/user');
 // validate: validator.$isEmail(),
@@ -19,17 +20,19 @@ module.exports.findUserById = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const {
-    name, email, password, about, avatar,
-  } = req.body;
-  if (!validator.isEmail(email)) {
-    res.status(400).send({ message: 'Email не удовлетворяют требованиям валидации' });
+  if (!validator.isEmail(req.body.email)) {
+    res.status(400).send({ message: 'Email не удовлетворяет требованиям валидации' });
     return;
   }
 
-  User.create({
-    name, email, password, about, avatar,
-  })
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: hash, // записываем хеш в базу
+      about: req.body.about,
+      avatar: req.body.avatar,
+    }))
     .then((user) => { res.send(user); })
     .catch((err) => {
       if (err.name === 'ValidationError') { res.status(400).send({ message: 'Данные о новом пользователе не удовлетворяют требованиям валидации' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
