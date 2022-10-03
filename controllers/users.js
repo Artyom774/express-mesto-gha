@@ -39,6 +39,28 @@ module.exports.createUser = (req, res) => {
     });
 };
 
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      return bcrypt.compare(password, user.password);
+    })
+    .then((matched) => {
+      if (!matched) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+      res.send({ message: 'Вы вошли' });
+    })
+    .catch((err) => {
+      if (err.name === 'Error') { res.status(400).send({ message: err.message }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+    });
+};
+
 module.exports.updateUser = (req, res) => {
   const meId = req.user._id;
   const { name, about } = req.body;
