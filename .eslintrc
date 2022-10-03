@@ -7,8 +7,6 @@
     "eslint:recommended",
     "airbnb-base"
   ],
-  "overrides": [
-  ],
   "parserOptions": {
     "ecmaVersion": "latest"
   },
