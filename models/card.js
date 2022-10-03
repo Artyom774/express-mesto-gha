@@ -26,6 +26,6 @@ const cardSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
-cardSchema.set('versionKey', false);
+cardSchema.set('versionKey', false); // убирает __v при создании пользователя
 
 module.exports = mongoose.model('card', cardSchema);
