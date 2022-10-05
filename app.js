@@ -22,16 +22,9 @@ const timeLog = (req, res, next) => {
 app.use(timeLog);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  req.user = {
-    _id: '632c76b5bc6118315f71b074',
-  };
 
-  next();
-});
-
-app.use('/users', auth);
 app.use('/users', usersRouter);
+app.use('/cards', auth);
 app.use('/cards', cardsRouter);
 app.use('/', (req, res) => { res.status(404).send({ message: 'Неправильный url-адрес запроса' }); });
 
