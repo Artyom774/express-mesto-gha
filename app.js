@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env; // файла .env нет в проекте
 const app = express();
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/users', auth);
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 app.use('/', (req, res) => { res.status(404).send({ message: 'Неправильный url-адрес запроса' }); });
