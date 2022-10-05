@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 // validate: validator.$isEmail(),
 
@@ -43,8 +44,9 @@ module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials(email, password)
-    .then(() => {
-      res.send({ message: 'Вы вошли' });
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.send({ token });
     })
     .catch((err) => {
       if (err.name === 'Error') { res.status(400).send({ message: err.message }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
