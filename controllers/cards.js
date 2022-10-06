@@ -28,13 +28,25 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findById(req.params.id)
+    .then((card) => {
+      if (card) {
+        if (card._id === req.user) {
+          Card.findByIdAndRemove(req.params.id);
+        } else { res.status(403).send({ message: 'Это карточка другого пользователя' }); }
+      } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+    });
+
+/* Card.findByIdAndRemove(req.params.id)
     .then((card) => {
       if (card) { res.send(card); } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
     })
     .catch((err) => {
       if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
-    });
+    }); */
 };
 
 module.exports.likeCard = (req, res) => {
