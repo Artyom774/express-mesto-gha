@@ -28,14 +28,16 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
+  const ownerId = req.user._id;
   Card.findById(req.params.id)
     .then((card) => {
       if (card) {
-        if (card._id === req.user._id) {
+        if (card._id === ownerId) {
           Card.findByIdAndRemove(req.params.id);
-        } else { res.status(403).send({ message: 'Это карточка другого пользователя' }); }
+        } else { res.status(403).send({ message: card._id, ownerId }); }
       } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
     })
+    .then((card) => { res.send(card); })
     .catch((err) => {
       if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
     });
