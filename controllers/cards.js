@@ -34,7 +34,7 @@ module.exports.deleteCard = (req, res) => {
       if (card) {
         if (card.owner === ownerId) {
           Card.findByIdAndRemove(req.params.id);
-        } else { res.status(403).send({ message: card.owner, ownerId }); }
+        } else { res.status(403).send({ message: ownerId, card: card.owner }); }
       } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
     })
     .then((card) => { res.send(card); })
