@@ -11,7 +11,7 @@ const {
   createUser, login,
 } = require('./controllers/users');
 
-const URLregex = /[_a-zA-Z\/\.0-9\:]+/;
+const URLregex = /http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*,]|(?:%[0-9a-fA-F][0-9a-fA-F]))+/;
 
 const { PORT = 3000 } = process.env; // файла .env нет в проекте
 const app = express();
@@ -20,8 +20,7 @@ app.use(cors());
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
-// "avatar": "https://ya.ru/av.bmp"
-// "avatar": "link:/link~!bad"
+
 const timeLog = (req, res, next) => {
   console.log('Используемый метод запроса: ', req.method);
   next();

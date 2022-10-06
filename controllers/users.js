@@ -13,7 +13,15 @@ module.exports.findAllUsers = (req, res) => {
 module.exports.findUserById = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
-      if (user) { res.send(user); } else { res.status(404).send({ message: 'Запрашиваемый пользователь не найден' }); }
+      if (user) {
+        res.status(201).send({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          about: user.about,
+          avatar: user.avatar,
+        });
+      } else { res.status(404).send({ message: 'Запрашиваемый пользователь не найден' }); }
     })
     .catch((err) => {
       if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
@@ -34,7 +42,15 @@ module.exports.createUser = (req, res) => {
       about: req.body.about,
       avatar: req.body.avatar,
     }))
-    .then((user) => { res.status(201).send({ _id: user._id, email: user.email }); })
+    .then((user) => {
+      res.status(201).send({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        about: user.about,
+        avatar: user.avatar,
+      });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') { res.status(400).send({ message: 'Данные о новом пользователе не удовлетворяют требованиям валидации' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
     });
