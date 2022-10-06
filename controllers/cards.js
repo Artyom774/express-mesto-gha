@@ -32,9 +32,9 @@ module.exports.deleteCard = (req, res) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (card) {
-        if (card._id === ownerId) {
+        if (card.owner === ownerId) {
           Card.findByIdAndRemove(req.params.id);
-        } else { res.status(403).send({ message: card._id, ownerId }); }
+        } else { res.status(403).send({ message: 'Это карточка другого пользователя' }); }
       } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
     })
     .then((card) => { res.send(card); })
