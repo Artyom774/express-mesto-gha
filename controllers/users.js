@@ -10,7 +10,7 @@ module.exports.findAllUsers = (req, res) => {
 };
 
 module.exports.getMeById = (req, res) => {
-  User.findById(req.body.user)
+  User.findById(req.user)
     .then((user) => {
       if (user) {
         res.status(200).send({
