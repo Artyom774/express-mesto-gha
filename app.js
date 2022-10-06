@@ -11,6 +11,8 @@ const {
   createUser, login,
 } = require('./controllers/users');
 
+const URLregex = /[_a-zA-Z\/\.0-9\:]+/;
+
 const { PORT = 3000 } = process.env; // файла .env нет в проекте
 const app = express();
 app.use(cors());
@@ -18,7 +20,8 @@ app.use(cors());
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
-
+// "avatar": "https://ya.ru/av.bmp"
+// "avatar": "link:/link~!bad"
 const timeLog = (req, res, next) => {
   console.log('Используемый метод запроса: ', req.method);
   next();
@@ -37,10 +40,10 @@ app.post('/signin', celebrate({
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(8),
-    email: Joi.string().required().min(5),
+    email: Joi.string().required().min(5).email(),
     password: Joi.string().required().min(8),
     about: Joi.string().min(2).max(8),
-    avatar: Joi.string().base64({ urlSafe: true }),
+    avatar: Joi.string().pattern(URLregex),
   }),
 }), createUser);
 app.use('/users', auth);
