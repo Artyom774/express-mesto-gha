@@ -45,9 +45,9 @@ app.post('/signup', celebrate({
     avatar: Joi.string().pattern(URLregex),
   }),
 }), createUser);
-app.use('/users', auth);
+app.use('/users', auth); // проверка токена
 app.use('/users', usersRouter);
-app.use('/cards', auth);
+app.use('/cards', auth); // проверка токена
 app.use('/cards', cardsRouter);
 app.use(errors());
 app.use((err, req, res, next) => {
