@@ -40,7 +40,7 @@ app.post('/signup', celebrate({
     email: Joi.string().required().min(5),
     password: Joi.string().required().min(8),
     about: Joi.string().min(2).max(8),
-    avatar: Joi.string(),
+    avatar: Joi.string().base64({ urlSafe: true }),
   }),
 }), createUser);
 app.use('/users', auth);

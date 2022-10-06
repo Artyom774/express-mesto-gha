@@ -34,7 +34,7 @@ module.exports.createUser = (req, res) => {
       about: req.body.about,
       avatar: req.body.avatar,
     }))
-    .then((user) => { res.send(user); })
+    .then((user) => { res.status(201).send({ _id: user._id, email: user.email }); })
     .catch((err) => {
       if (err.name === 'ValidationError') { res.status(400).send({ message: 'Данные о новом пользователе не удовлетворяют требованиям валидации' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
     });
