@@ -28,13 +28,13 @@ app.use(timeLog);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-usersRouter.post('/signin', celebrate({
+app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().min(5),
     password: Joi.string().required().min(8),
   }),
 }), login);
-usersRouter.post('/signup', celebrate({
+app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(8),
     email: Joi.string().required().min(5),
