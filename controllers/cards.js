@@ -32,6 +32,7 @@ module.exports.deleteCard = (req, res) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (card) {
+        res.send({ message: `card.owner = '${card.owner}', ownerId = '${ownerId}'.` });
         if (card.owner === ownerId) {
           Card.findByIdAndRemove(req.params.id);
         } else { res.status(403).send({ message: ownerId, card: card.owner }); }
