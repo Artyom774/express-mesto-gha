@@ -33,31 +33,16 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => {
       const cardOwner = String(card.owner);
       if (card) {
-        console.log(`card.owner = '${cardOwner}', ownerId = '${ownerId}'.`);
-        console.log(typeof cardOwner);
-        console.log(typeof ownerId);
-        console.log(cardOwner === ownerId);
         if (cardOwner === ownerId) {
-          console.log('мы тут');
-          Card.findByIdAndRemove(req.params.id);
+          console.log('Карточка найдена');
         } else { res.status(403).send({ message: 'Эта карточка принадлежит другому пользователю' }); }
       } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
     })
+    .then(() => Card.findByIdAndRemove(req.params.id))
     .then((card) => { res.status(200).send(card); })
     .catch((err) => {
-      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else if (err.name === 'TypeError') { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
     });
-
-/* Card.findByIdAndRemove(req.params.id)
-    .then((card) => {
-      if (card) { res.send(card); } else { res.status(404)
-        .send({ message: 'Запрашиваемая карточка не найден' }); }
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') { res.status(400)
-        .send({ message: 'Передан некорректный id' }); } else { res.status(500)
-          .send({ message: 'Ошибка! Проверьте введённые данные' }); }
-    }); */
 };
 
 module.exports.likeCard = (req, res) => {
