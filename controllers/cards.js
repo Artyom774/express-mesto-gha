@@ -1,3 +1,6 @@
+const BadRequestError = require('../errors/BadRequestError');
+const ForbiddenError = require('../errors/ForbiddenError');
+const NotFoundError = require('../errors/NotFoundError');
 const Card = require('../models/card');
 
 module.exports.findAllCards = (req, res) => {
@@ -27,21 +30,24 @@ module.exports.createCard = (req, res) => {
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const ownerId = req.user._id;
   Card.findById(req.params.id)
+    .orFail(new NotFoundError(`Карточка c id '${req.params.id}' не найдена`))
     .then((card) => {
-      const cardOwner = String(card.owner);
       if (card) {
-        if (cardOwner === ownerId) {
-          console.log('Карточка найдена');
-        } else { res.status(403).send({ message: 'Эта карточка принадлежит другому пользователю' }); }
-      } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
+        if (card.owner.toString() === ownerId) {
+          card.delete()
+            .then(() => res.status(200).json({ message: `Карточка c id '${req.params.id}' успешно удалена` }));
+        } else { throw new ForbiddenError('Эта карточка принадлежит другому пользователю'); }
+      }
     })
-    .then(() => Card.findByIdAndRemove(req.params.id))
-    .then((card) => { res.status(200).send(card); })
     .catch((err) => {
-      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else if (err.name === 'TypeError') { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+      if (err.name === 'CastError') {
+        next(new BadRequestError(`'${req.params.id}' не является корректным идентификатором`));
+      } else {
+        next(err);
+      }
     });
 };
 

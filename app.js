@@ -10,6 +10,7 @@ const auth = require('./middlewares/auth');
 const {
   createUser, login,
 } = require('./controllers/users');
+const errorHandler = require('./middlewares/errorHandler');
 
 const URLregex = /http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*,]|(?:%[0-9a-fA-F][0-9a-fA-F]))+/;
 
@@ -45,16 +46,12 @@ app.post('/signup', celebrate({
     avatar: Joi.string().pattern(URLregex),
   }),
 }), createUser);
-app.use('/users', auth); // проверка токена
+app.use(auth); // проверка токена
 app.use('/users', usersRouter);
-app.use('/cards', auth); // проверка токена
 app.use('/cards', cardsRouter);
-app.use(errors());
-app.use((err, req, res, next) => {
-  res.status(400).send({ message: err.message });
-  next();
-});
 app.use('/', (req, res) => { res.status(404).send({ message: 'Неправильный url-адрес запроса' }); });
+app.use(errors());
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Порт сервера: ${PORT}`);
