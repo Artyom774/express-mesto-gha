@@ -69,7 +69,8 @@ module.exports.createUser = (req, res) => {
       });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Данные о новом пользователе не удовлетворяют требованиям валидации' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Данные о новом пользователе не удовлетворяют требованиям валидации' }); } else
+      if (err.name === 'MongoServerError') { res.status(409).send({ message: 'Пользователь с таким email уже есть' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
     });
 };
 
@@ -82,6 +83,7 @@ module.exports.login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
+      if (err.name === 'emailPasswordError') { res.status(401).send({ message: err.message }); } else
       if (err.name === 'Error') { res.status(400).send({ message: err.message }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
     });
 };
