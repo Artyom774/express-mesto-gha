@@ -31,14 +31,19 @@ module.exports.deleteCard = (req, res) => {
   const ownerId = req.user._id;
   Card.findById(req.params.id)
     .then((card) => {
+      const cardOwner = String(card.owner);
       if (card) {
-        res.send({ message: `card.owner = '${card.owner}', ownerId = '${ownerId}'.` });
-        if (card.owner === ownerId) {
+        console.log(`card.owner = '${cardOwner}', ownerId = '${ownerId}'.`);
+        console.log(typeof cardOwner);
+        console.log(typeof ownerId);
+        console.log(cardOwner === ownerId);
+        if (cardOwner === ownerId) {
+          console.log('мы тут');
           Card.findByIdAndRemove(req.params.id);
-        } else { res.status(403).send({ message: ownerId, card: card.owner }); }
+        } else { res.status(403).send({ message: 'Эта карточка принадлежит другому пользователю' }); }
       } else { res.status(404).send({ message: 'Запрашиваемая карточка не найден' }); }
     })
-    .then((card) => { res.send(card); })
+    .then((card) => { res.status(200).send(card); })
     .catch((err) => {
       if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
     });
