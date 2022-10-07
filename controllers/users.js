@@ -22,6 +22,7 @@ module.exports.findAllUsers = (req, res, next) => {
 
 module.exports.getMeById = (req, res, next) => {
   User.findById(req.user)
+    .orFail(new NotFoundError(`Пользователь c id '${req.params.id}' не найден`))
     .then((user) => {
       if (user) {
         res.status(200).send({
@@ -31,10 +32,14 @@ module.exports.getMeById = (req, res, next) => {
           about: user.about,
           avatar: user.avatar,
         });
-      } else { res.status(404).send({ message: 'Запрашиваемый пользователь не найден' }); }
+      }
     })
     .catch((err) => {
-      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { next(err); }
+      if (err.name === 'CastError') {
+        next(new BadRequestError(`'${req.params.id}' не является корректным идентификатором`));
+      } else {
+        next(err);
+      }
     });
 };
 

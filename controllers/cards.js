@@ -31,12 +31,17 @@ module.exports.createCard = (req, res, next) => {
   Card.create({ name, link, owner: ownerId })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Данные о новой карточке не удовлетворяют требованиям валидации' }); } else { next(err); }
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Данные о новой карточке не удовлетворяют требованиям валидации'));
+      } else {
+        next(err);
+      }
     });
 };
 
 module.exports.deleteCard = (req, res, next) => {
   const ownerId = req.user._id;
+
   Card.findById(req.params.id)
     .orFail(new NotFoundError(`Карточка c id '${req.params.id}' не найдена`))
     .then((card) => {
