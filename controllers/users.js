@@ -2,8 +2,10 @@ const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
 
-module.exports.findAllUsers = (req, res) => {
+module.exports.findAllUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
       const allUsers = users.map((user) => ({
@@ -15,10 +17,10 @@ module.exports.findAllUsers = (req, res) => {
       }));
       res.send(allUsers);
     })
-    .catch(() => res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }));
+    .catch((err) => next(err));
 };
 
-module.exports.getMeById = (req, res) => {
+module.exports.getMeById = (req, res, next) => {
   User.findById(req.user)
     .then((user) => {
       if (user) {
@@ -32,12 +34,13 @@ module.exports.getMeById = (req, res) => {
       } else { res.status(404).send({ message: 'Запрашиваемый пользователь не найден' }); }
     })
     .catch((err) => {
-      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { next(err); }
     });
 };
 
-module.exports.findUserById = (req, res) => {
+module.exports.findUserById = (req, res, next) => {
   User.findById(req.params.id)
+    .orFail(new NotFoundError(`Пользователь c id '${req.params.id}' не найден`))
     .then((user) => {
       if (user) {
         res.status(200).send({
@@ -47,14 +50,18 @@ module.exports.findUserById = (req, res) => {
           about: user.about,
           avatar: user.avatar,
         });
-      } else { res.status(404).send({ message: 'Запрашиваемый пользователь не найден' }); }
+      }
     })
     .catch((err) => {
-      if (err.name === 'CastError') { res.status(400).send({ message: 'Передан некорректный id' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+      if (err.name === 'CastError') {
+        next(new BadRequestError(`'${req.params.id}' не является корректным идентификатором`));
+      } else {
+        next(err);
+      }
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   if (!validator.isEmail(req.body.email)) {
     res.status(400).send({ message: 'Email не удовлетворяет требованиям валидации' });
     return;
@@ -79,11 +86,11 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') { res.status(400).send({ message: 'Данные о новом пользователе не удовлетворяют требованиям валидации' }); } else
-      if (err.name === 'MongoServerError') { res.status(409).send({ message: 'Пользователь с таким email уже есть' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+      if (err.name === 'MongoServerError') { res.status(409).send({ message: 'Пользователь с таким email уже есть' }); } else { next(err); }
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials(email, password)
@@ -93,15 +100,16 @@ module.exports.login = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'emailPasswordError') { res.status(401).send({ message: err.message }); } else
-      if (err.name === 'Error') { res.status(400).send({ message: err.message }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+      if (err.name === 'Error') { res.status(400).send({ message: err.message }); } else { next(err); }
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const meId = req.user._id;
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(meId, { name, about }, { new: true, runValidators: true })
+    .orFail(new NotFoundError(`Пользователь c id '${req.params.id}' не найден`))
     .then((user) => {
       if (user) {
         res.status(200).send({
@@ -111,18 +119,19 @@ module.exports.updateUser = (req, res) => {
           about: user.about,
           avatar: user.avatar,
         });
-      } else { res.status(404).send({ message: 'Запрашиваемый пользователь не найден' }); }
+      }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Новые данные не удовлетворяют требованиям валидации' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Новые данные не удовлетворяют требованиям валидации' }); } else { next(err); }
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const meId = req.user._id;
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(meId, { avatar }, { new: true, runValidators: true })
+    .orFail(new NotFoundError(`Пользователь c id '${req.params.id}' не найден`))
     .then((user) => {
       if (user) {
         res.status(200).send({
@@ -132,9 +141,9 @@ module.exports.updateAvatar = (req, res) => {
           about: user.about,
           avatar: user.avatar,
         });
-      } else { res.status(404).send({ message: 'Запрашиваемый пользователь не найден' }); }
+      }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Новые данные не удовлетворяют требованиям валидации' }); } else { res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }); }
+      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Новые данные не удовлетворяют требованиям валидации' }); } else { next(err); }
     });
 };
