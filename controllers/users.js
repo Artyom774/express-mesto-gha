@@ -5,7 +5,16 @@ const User = require('../models/user');
 
 module.exports.findAllUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send(users))
+    .then((users) => {
+      const allUsers = users.map((user) => ({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        about: user.about,
+        avatar: user.avatar,
+      }));
+      res.send(allUsers);
+    })
     .catch(() => res.status(500).send({ message: 'Ошибка! Проверьте введённые данные' }));
 };
 
