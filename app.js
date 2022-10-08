@@ -27,8 +27,8 @@ app.use(timeLog); // при любом запросе выводит его ме
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signin', signInRouter); // авторизация пользователя
-app.post('/signup', signUpRouter); // регистрация пользователя
+app.use('/signin', signInRouter); // авторизация пользователя
+app.use('/signup', signUpRouter); // регистрация пользователя
 app.use(auth); // проверка токена
 app.use('/users', usersRouter); // пути для работы с карточками
 app.use('/cards', cardsRouter); // пути для работы с пользователем
