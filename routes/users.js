@@ -3,13 +3,13 @@ const { celebrate, Joi } = require('celebrate');
 const {
   findAllUsers, getMeById, findUserById, updateUser, updateAvatar,
 } = require('../controllers/users');
-const { URLregex } = require('../utils/constants');
+const { URLregex, idRegex } = require('../utils/constants');
 
 usersRouter.get('/', findAllUsers);
 usersRouter.get('/me', getMeById);
 usersRouter.get('/:id', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24),
+    id: Joi.string().length(24).pattern(idRegex),
   }),
 }), findUserById);
 usersRouter.patch('/me', celebrate({
