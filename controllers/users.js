@@ -4,7 +4,6 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const DuplicateError = require('../errors/DuplicateError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports.findAllUsers = (req, res, next) => {
   User.find({})
@@ -106,9 +105,6 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch((err) => {
-      if (err.name === 'emailPasswordError') {
-        next(new UnauthorizedError('Ошибка авторизации'));
-      } else
       if (err.name === 'Error') {
         next(new BadRequestError(err.message));
       } else {
