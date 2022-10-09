@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
+const DuplicateError = require('../errors/DuplicateError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports.findAllUsers = (req, res, next) => {
   User.find({})
@@ -90,8 +92,14 @@ module.exports.createUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Данные о новом пользователе не удовлетворяют требованиям валидации' }); } else
-      if (err.name === 'MongoServerError') { res.status(409).send({ message: 'Пользователь с таким email уже есть' }); } else { next(err); }
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Данные о новом пользователе не удовлетворяют требованиям валидации'));
+      } else
+      if (err.code === 11000) {
+        next(new DuplicateError('Пользователь с таким email уже есть'));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -104,8 +112,14 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch((err) => {
-      if (err.name === 'emailPasswordError') { res.status(401).send({ message: err.message }); } else
-      if (err.name === 'Error') { res.status(400).send({ message: err.message }); } else { next(err); }
+      if (err.name === 'emailPasswordError') {
+        next(new UnauthorizedError('Ошибка авторизации'));
+      } else
+      if (err.name === 'Error') {
+        next(new BadRequestError(err.message));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -127,7 +141,11 @@ module.exports.updateUser = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Новые данные не удовлетворяют требованиям валидации' }); } else { next(err); }
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Новые данные не удовлетворяют требованиям валидации'));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -149,6 +167,10 @@ module.exports.updateAvatar = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') { res.status(400).send({ message: 'Новые данные не удовлетворяют требованиям валидации' }); } else { next(err); }
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Новые данные не удовлетворяют требованиям валидации'));
+      } else {
+        next(err);
+      }
     });
 };

@@ -9,6 +9,7 @@ const signInRouter = require('./routes/signIn');
 const signUpRouter = require('./routes/signUp');
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000 } = process.env; // файла .env нет в проекте
 const app = express(); // app работает через фреймворк Express
@@ -32,7 +33,7 @@ app.use('/signup', signUpRouter); // регистрация пользовате
 app.use(auth); // проверка токена
 app.use('/users', usersRouter); // пути для работы с карточками
 app.use('/cards', cardsRouter); // пути для работы с пользователем
-app.use('/', (req, res) => { res.status(404).send({ message: 'Неправильный url-адрес запроса' }); }); // введён неизвестный путь
+app.use('/', (req, res, next) => { next(new NotFoundError(`'${req.params.id}' не является корректным идентификатором`)); }); // введён неизвестный путь
 app.use(errors()); // обработка ошибок библиотеки celebrate
 app.use(errorHandler); // обработка ошибок сервера
 
