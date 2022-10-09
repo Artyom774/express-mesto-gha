@@ -3,8 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const {
   findAllCards, findCardById, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
-
-const URLregex = /http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*,]|(?:%[0-9a-fA-F][0-9a-fA-F]))+/;
+const { URLregex } = require('../utils/constants');
 
 cardsRouter.get('/', findAllCards);
 cardsRouter.get('/:id', celebrate({

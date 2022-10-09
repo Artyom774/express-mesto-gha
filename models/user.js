@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
+const { isEmail } = require('validator');
+const { URLregex } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
   name: { // у пользователя есть имя — опишем требования к имени в схеме:
@@ -12,6 +14,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    validate: [isEmail, 'invalidEmail'],
   },
   password: {
     type: String,
@@ -27,6 +30,7 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: [URLregex, 'invalidAvatar'],
   },
 });
 userSchema.set('versionKey', false); // убирает __v при создании пользователя

@@ -1,5 +1,4 @@
 const bcrypt = require('bcryptjs');
-const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
@@ -69,11 +68,6 @@ module.exports.findUserById = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  if (!validator.isEmail(req.body.email)) {
-    res.status(400).send({ message: 'Email не удовлетворяет требованиям валидации' });
-    return;
-  }
-
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name: req.body.name,

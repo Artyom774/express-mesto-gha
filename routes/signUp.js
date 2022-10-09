@@ -1,8 +1,7 @@
 const signUpRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { createUser } = require('../controllers/users');
-
-const URLregex = /http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*,]|(?:%[0-9a-fA-F][0-9a-fA-F]))+/;
+const { URLregex } = require('../utils/constants');
 
 signUpRouter.post('/', celebrate({
   body: Joi.object().keys({
