@@ -19,12 +19,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', { // подключени�
   useNewUrlParser: true,
 });
 
-const timeLog = (req, res, next) => { // вывод метода запроса
-  console.log('Используемый метод запроса: ', req.method);
-  next();
-};
-
-app.use(timeLog); // при любом запросе выводит его метод (нужно для разработки)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -37,6 +31,6 @@ app.use('/', (req, res, next) => { next(new NotFoundError(`'${req.params.id}' н
 app.use(errors()); // обработка ошибок библиотеки celebrate
 app.use(errorHandler); // обработка ошибок сервера
 
-app.listen(PORT, () => { // при запуске сервера выводит порт
+app.listen(PORT, () => { // при запуске сервера выводит его порт
   console.log(`Порт сервера: ${PORT}`);
 });
